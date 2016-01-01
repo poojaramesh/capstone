@@ -1,0 +1,16 @@
+Files in this directory:
+
+colordescriptor.py
+    - Reads an image, converts it to HSV, extracts a 3D histogram of the image and creates a features from the histogram based on the bin size
+
+data_prep_transfer.py
+    - Preps data to run a CNN transfer for each cluster
+
+index.py
+    - Reads in images from a directory and creates a X array where number of rows equals the number of images, and the columns are the extracted features for each image. Runs kmeans on X to create 3 clusters based on stain variation in each image 
+
+mitosis_cnn_transfer.py
+    - Runs CNN for each cluster and transfers the weights to the next CNN cluster
+
+test_cnn_transfer.py
+    - Script to test the CNN transfer model

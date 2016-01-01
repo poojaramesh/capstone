@@ -1,0 +1,84 @@
+from __future__ import print_function
+import numpy as np
+np.random.seed(1337)  # for reproducibility
+
+from data_prep import get_input
+from keras.models import Sequential
+from keras.layers.core import Dense, Dropout, Activation, Flatten
+from keras.layers.convolutional import Convolution2D, MaxPooling2D
+from keras.utils import np_utils
+from sklearn.cross_validation import train_test_split
+
+batch_size = 128
+nb_classes = 3 
+nb_epoch = 2 
+
+# input image dimensions
+img_rows, img_cols = 100, 100
+# number of convolutional filters to use
+nb_filters1 = 64 
+nb_filters2 = 128 
+# size of pooling area for max pooling
+nb_pool = 2
+# convolution kernel size
+nb_conv = 4
+
+# the data, shuffled and split between tran and test sets
+X, y = get_input('/data/ScannerA', [-1, -1, 10000], True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+X_train = X_train.reshape(X_train.shape[0], 3, img_rows, img_cols)
+X_test = X_test.reshape(X_test.shape[0], 3, img_rows, img_cols)
+X_train = X_train.astype('float32')
+X_test = X_test.astype('float32')
+X_train /= 255
+X_test /= 255
+print('X_train shape:', X_train.shape)
+print(X_train.shape[0], 'train samples')
+print(X_test.shape[0], 'test samples')
+
+# convert class vectors to binary class matrices
+Y_train = np_utils.to_categorical(y_train, nb_classes)
+Y_test = np_utils.to_categorical(y_test, nb_classes)
+
+model = Sequential()
+
+model.add(Convolution2D(nb_filters1, nb_conv, nb_conv,
+                        border_mode='valid',
+                        input_shape=(3, img_rows, img_cols)))
+model.add(Activation('relu'))
+model.add(Convolution2D(nb_filters1, nb_conv, nb_conv))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
+
+model.add(Convolution2D(nb_filters2, nb_conv, nb_conv,
+                        border_mode='valid',
+                        input_shape=(3, img_rows, img_cols)))
+model.add(Activation('relu'))
+model.add(Convolution2D(nb_filters2, nb_conv, nb_conv))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
+model.add(Dropout(0.25))
+
+
+model.add(Flatten())
+model.add(Dense(256))
+model.add(Activation('relu'))
+model.add(Dropout(0.25))
+model.add(Dense(nb_classes))
+model.add(Activation('softmax'))
+
+model.compile(loss='categorical_crossentropy', optimizer='adadelta')
+
+X_batch = X_train[0:256, :, :, :]
+Y_batch = Y_train[0:256, :]
+print ("X_batch shape", X_batch.shape)
+print ("Y_batch shape", Y_batch.shape)
+
+model.train_on_batch(X_batch, Y_batch)
+
+#model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch,
+#          show_accuracy=True, verbose=1, validation_data=(X_test, Y_test))
+score = model.evaluate(X_test, Y_test, show_accuracy=True, verbose=0)
+print('Test score:', score[0])
+print('Test accuracy:', score[1])

@@ -1,0 +1,12 @@
+Code in this folder has been taken from:
+http://www.pyimagesearch.com/2014/12/01/complete-guide-building-image-search-engine-python-opencv/
+
+Modified to handle histopathology data
+
+Create features csv
+python index.py --dataset test_images/ScannerA/A03/frames/x40/split_images --index index.csv
+
+Run search engine
+python search.py --index index.csv --query test_images/ScannerA/A03/frames/x40/split_images/A03_00Cd_600_200_mitosis.tiff --result-path test_images/ScannerA/A03/frames/x40/split_images
+
+
