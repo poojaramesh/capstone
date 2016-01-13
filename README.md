@@ -7,7 +7,7 @@ Breast cancer grading plays an important role in predicting the aggressiveness o
 
 The goal of this project is to bring the power of machine learning to the field of pathology and provide a consistent tool and diagnostic aid that relieves pathologists of this tedious task. 
 
-<br />
+## Objective
 
 In this project, I leverage digital pathology images and convolutional neural networks to learn features of cells undergoing mitosis and detect them.
 
